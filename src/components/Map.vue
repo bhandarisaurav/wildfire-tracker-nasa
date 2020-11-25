@@ -1,16 +1,33 @@
 <template>
-  <div class="map">
-    <div class="title">NASA's Wildfire Tracker</div>
-    <l-map :zoom="zoom" :center="center">
-      <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-      <l-marker :lat-lng="marker"></l-marker>
-    </l-map>
+  <div>
+    <div class="map" v-if="!loading">
+      <div class="title">NASA's Wildfire Tracker</div>
+      <l-map :zoom="zoom" :center="center">
+        <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
+        <l-marker :lat-lng="marker">
+          <l-popup>
+            <div>
+              I am a popup
+              <p>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
+                sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi.
+                Donec finibus semper metus id malesuada.
+              </p>
+            </div>
+          </l-popup>
+        </l-marker>
+      </l-map>
+    </div>
+    <Loader v-if="loading" />
   </div>
 </template>
 
 <script>
 import { latLng } from "leaflet";
-import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+import { LMap, LTileLayer, LMarker, LPopup } from "vue2-leaflet";
+import axios from "axios";
+import { URL } from "./utils/API";
+import Loader from "./Loader.vue";
 
 export default {
   name: "Map",
@@ -18,11 +35,14 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
-    // LPopup,
+    Loader,
+    LPopup,
     // LTooltip,
   },
   data() {
     return {
+      eventData: [],
+      loading: true,
       zoom: 5,
       center: latLng(37.09024, -95.712891),
       marker: latLng(37.09024, -95.712891),
@@ -31,7 +51,30 @@ export default {
         '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
     };
   },
-  methods: {},
+  methods: {
+    async fetchData() {
+      await axios
+        .get(URL)
+        .then((response) => {
+          this.loading = false;
+          this.eventData = response.data.events;
+        })
+        .catch((error) => {
+          console.log("error", error);
+        });
+      this.filterEventsData();
+    },
+
+    filterEventsData() {
+      const filteredEventsData = this.eventData.filter(
+        (event) => event.categories[0].title === "Wildfires"
+      );
+      this.eventData = filteredEventsData;
+    },
+  },
+  created() {
+    this.fetchData();
+  },
 };
 </script>
 
