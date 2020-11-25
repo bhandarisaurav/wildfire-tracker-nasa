@@ -4,14 +4,18 @@
       <div class="title">NASA's Wildfire Tracker</div>
       <l-map :zoom="zoom" :center="center">
         <l-tile-layer :url="url" :attribution="attribution"></l-tile-layer>
-        <l-marker :lat-lng="marker">
+        <l-marker
+          v-for="(data, index) in formattedData"
+          :key="index"
+          :lat-lng="data.coordinates"
+        >
           <l-popup>
             <div>
-              I am a popup
+              <strong>{{ data.id }}</strong>
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque
-                sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi.
-                Donec finibus semper metus id malesuada.
+                <strong>ON : {{ data.date }}</strong>
+                <br />
+                {{ data.title }}
               </p>
             </div>
           </l-popup>
@@ -42,6 +46,7 @@ export default {
   data() {
     return {
       eventData: [],
+      formattedData: [],
       loading: true,
       zoom: 5,
       center: latLng(37.09024, -95.712891),
@@ -70,6 +75,22 @@ export default {
         (event) => event.categories[0].title === "Wildfires"
       );
       this.eventData = filteredEventsData;
+      this.formattedData = this.formatData();
+    },
+
+    formatData() {
+      const formattedData = this.eventData.map((data) => {
+        let obj = {};
+        obj.id = data.id;
+        obj.title = data.title;
+        obj.date = new Date(data.geometries[0].date).toDateString();
+        obj.coordinates = latLng(
+          data.geometries[0].coordinates[1],
+          data.geometries[0].coordinates[0]
+        );
+        return obj;
+      });
+      return formattedData;
     },
   },
   created() {
