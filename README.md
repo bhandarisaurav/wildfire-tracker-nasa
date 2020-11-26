@@ -1,4 +1,8 @@
-# wildfire-tracker-nasa
+# Wildfire Tracker | Vue 2 | Vue Leaflet
+
+### `Deployment Status`
+
+## This project is deployed at [wildfire-tracker-nasa](https://wildfire-tracker-nasa.netlify.app/).
 
 ## Project setup
 ```
