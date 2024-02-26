@@ -1,27 +1,7 @@
-<template>
-  <div id="app">
-    <Map />
-  </div>
-</template>
-
-<script>
-import Map from "./components/Map.vue";
-
-export default {
-  name: "App",
-  components: {
-    Map,
-  },
-};
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
 </script>
 
-<style>
-#app {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 20px;
-}
-</style>
+<template>
+  <RouterView />
+</template>
